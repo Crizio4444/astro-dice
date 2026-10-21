@@ -62,6 +62,7 @@ public class MainActivity extends Activity {
     private static final String KEY_API_BASE = "api_base";
     private static final String KEY_API_KEY = "api_key";
     private static final String KEY_API_MODEL = "api_model";
+    private static final String KEY_SETTINGS_OPEN = "ai_settings_open";
     private static final int HISTORY_LIMIT = 100;
 
     private final Random random = new Random();
@@ -77,6 +78,9 @@ public class MainActivity extends Activity {
     private EditText etApiBase, etApiKey, etApiModel;
     private Button btnSaveApi, btnTestApi;
     private TextView tvApiStatus;
+    private LinearLayout aiSettingsBody;
+    private TextView aiSettingsArrow;
+    private boolean settingsOpen;
 
     private JSONObject rules;
     private boolean rolling = false;
@@ -107,6 +111,8 @@ public class MainActivity extends Activity {
         btnSaveApi = findViewById(R.id.btn_save_api);
         btnTestApi = findViewById(R.id.btn_test_api);
         tvApiStatus = findViewById(R.id.tv_api_status);
+        aiSettingsBody = findViewById(R.id.ai_settings_body);
+        aiSettingsArrow = findViewById(R.id.ai_settings_arrow);
 
         btnRoll.setOnClickListener(v -> roll());
         btnSaveApi.setOnClickListener(v -> {
@@ -114,6 +120,13 @@ public class MainActivity extends Activity {
             toast("AI 设置已保存");
         });
         btnTestApi.setOnClickListener(v -> testApi());
+        settingsOpen = sp().getBoolean(KEY_SETTINGS_OPEN, false);
+        applySettingsOpen();
+        findViewById(R.id.ai_settings_header).setOnClickListener(v -> {
+            settingsOpen = !settingsOpen;
+            sp().edit().putBoolean(KEY_SETTINGS_OPEN, settingsOpen).apply();
+            applySettingsOpen();
+        });
 
         etApiBase.setText(apiBase());
         etApiKey.setText(apiKey());
@@ -339,6 +352,11 @@ public class MainActivity extends Activity {
                 .putString(KEY_API_KEY, etApiKey.getText().toString().trim())
                 .putString(KEY_API_MODEL, etApiModel.getText().toString().trim())
                 .apply();
+    }
+
+    private void applySettingsOpen() {
+        aiSettingsBody.setVisibility(settingsOpen ? View.VISIBLE : View.GONE);
+        aiSettingsArrow.setText(settingsOpen ? "▾" : "▸");
     }
 
     // 测试连接：先保存，再 GET /models 验证 key 与地址，最后用最小对话验证模型可用
