@@ -5,3 +5,4 @@ local.properties
 build/
 */build/
 .cxx/
+/astrodice.keystore
