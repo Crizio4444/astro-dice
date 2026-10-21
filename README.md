@@ -53,14 +53,14 @@
 
 ## 四、PicoClaw 插件
 
-`picoclaw-skill/` 是配套的 [PicoClaw](https://github.com/sipeed/picoclaw) 技能插件，同一套「流水十二程」规则：
+`astro-dice/` 是配套的 [PicoClaw](https://github.com/sipeed/picoclaw) 技能插件（目录名即技能名），同一套「流水十二程」规则：
 在 PicoClaw 里对 AI 助手说「掷占星骰子」（或让它运行 `node scripts/roll.js [问题]`）即可掷骰解读。
 规则文件与安卓 App 共用一份（`assets/rules.json`），改法相同。
 
 安装（把技能放进 PicoClaw 的 workspace）：
 
 ```bash
-cp -r picoclaw-skill/. /root/.picoclaw/workspace/skills/astro-dice/
+cp -r astro-dice/. /root/.picoclaw/workspace/skills/astro-dice/
 ```
 
 ## 项目结构
@@ -70,9 +70,9 @@ app/src/main/
 ├── assets/rules.json                 ← 解读规则（改这里）
 ├── java/com/astrodice/app/MainActivity.java
 └── res/                              ← 界面布局、颜色、图标
-picoclaw-skill/                       ← PicoClaw 技能插件
+astro-dice/                          ← PicoClaw 技能插件（目录名 = 技能名）
 ├── SKILL.md                          ← 技能说明（触发与用法）
-├── roll_dice.sh                      ← 入口包装脚本（调用下面的 roll.js）
+├── scripts/roll_dice.sh              ← 入口包装脚本（调用同目录 roll.js）
 ├── scripts/roll.js                   ← 掷骰+解读脚本（node）
 └── assets/rules.json                 ← 与 App 相同的规则（含保密的解读内容）
 ```
