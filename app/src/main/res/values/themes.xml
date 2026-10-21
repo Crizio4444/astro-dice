@@ -2,8 +2,8 @@
 <resources>
     <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@drawable/bg_gradient</item>
-        <item name="android:statusBarColor">#0D0D2B</item>
-        <item name="android:navigationBarColor">#0D0D2B</item>
-        <item name="android:colorAccent">#E8C872</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="android:colorAccent">#FFFFFF</item>
     </style>
 </resources>

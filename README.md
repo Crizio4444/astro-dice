@@ -24,16 +24,23 @@
 
 | 字段 | 作用 |
 |---|---|
-| `planets` | 12 个行星各自的核心含义 `core`、水的意象 `water`（这条河的水性）与关键词 `keywords`（用顿号拼进解读） |
-| `signs` | 12 星座的元素 `element`、模式 `mode`、流水阶段 `phase`（第几程·所属阶段期）、流法意象 `style` |
-| `houses` | 12 宫位（键是数字字符串 `"1"`~`"12"`）的名称 `name`、流水阶段 `phase`、归处意象 `domain` |
+| `planets` | 12 个行星各自的关键词 `kw`、核心含义 `core`、水的意象 `water`（这条河的水性）与关键词组 `keywords` |
+| `signs` | 12 星座的关键词 `kw`、元素 `element`、模式 `mode`、流水阶段 `phase`（第几程·所属阶段期）、流法意象 `style` |
+| `houses` | 12 宫位（键是数字字符串 `"1"`~`"12"`）的关键词 `kw`、名称 `name`、流水阶段 `phase`、归处意象 `domain` |
+| `dignity` | 庙旺表：每颗行星的入庙 `domicile`、擢升 `exaltation`、失势 `detriment`、落陷 `fall` 星座 |
+| `dignityNotes` | 入庙/擢升/失势/落陷/平五种状态的断语 |
+| `aspectNotes` | 星座与宫位按天然对应（白羊↔1宫……）成合0°/邻30°/六合60°/刑90°/拱120°/梅花150°/冲180° 的断语 |
 | `template` | 解读模板，占位符在掷骰后自动替换（见下方列表） |
 | `overrides` | 针对具体组合的完整解读，优先级最高 |
 
 **template 可用占位符：**
-`{question}`（用户的问题）、`{planet}` `{planet_core}` `{planet_water}` `{planet_keywords}`、
-`{sign}` `{sign_element}` `{sign_mode}` `{sign_style}` `{sign_phase}`、
-`{house}`（数字）`{house_name}` `{house_domain}` `{house_phase}`、`{combo}`（综合句）
+`{question}`（用户的问题）、`{planet}` `{planet_core}` `{planet_water}` `{planet_keywords}` `{planet_kw}`、
+`{sign}` `{sign_element}` `{sign_mode}` `{sign_style}` `{sign_phase}` `{sign_kw}`、
+`{house}`（数字）`{house_name}` `{house_domain}` `{house_phase}` `{house_kw}`、
+`{dignity}`（庙旺行）`{aspect}`（相位行）、`{combo}`（综合句）
+
+**组合规则（默认综合句）：** `「行星」在星座，落于第N宫——` 起句，拼接三相关键词与庙旺/相位断语；
+命中 `overrides` 时以 override 文本替代。
 
 **解读体系（当前内置）：一条河**（已定稿，具体内容保密） ——
 行星 = 水性、星座 = 流法、宫位 = 归处，三相合成一条河的完整叙事；程数即事情所处的阶段。
@@ -41,17 +48,26 @@
 
 **overrides 的键格式：** `行星|星座|宫位数字`，例如 `"月亮|巨蟹座|4宫"`。
 掷出这个组合时，用 override 文本替代默认综合句。三颗骰子共 12×12×12 = **1728 种组合**，
-想写多少写多少，没写的组合会自动走模板拼接。文件里已放了 8 条入庙组合作为示例。
+想写多少写多少，没写的组合会自动走组合规则模板。文件里已放了 10 条示例。
 
-## 三、手机上不连电脑也能换规则
+## 二·五、AI 综合解读（Moonshot）
 
-1. 把改好的 `rules.json` 发到手机（微信/QQ/邮件都行），保存到「下载」文件夹
-2. 打开 App → 点 **导入规则文件** → 选中 `rules.json`
-3. 想换回内置规则：点 **恢复默认规则**
+掷骰后 App 会先把本地规则解读（骰面/关键词/庙旺/相位/规则综合）显示出来，
+随后调用 Moonshot（Kimi）API 生成 AI 综合段并自动替换；网络不可用或失败时保留本地规则综合。
 
-> 注意：JSON 里不能有注释，逗号多了或少了都会导致解析失败（App 会提示并回退到内置简版规则）。
+- **在 App 里改**：界面下方「AI 设置」卡片可直接修改 **API 地址 / API Key / 模型**，
+  点 **保存设置** 后生效（保存在本机，不需要重新打包）。
+- **测试 API**：点 **测试 API**，会先保存当前设置，然后依次验证
+  `GET {地址}/models`（key 与地址是否可用）和一次最小对话（模型是否可用），结果显示在按钮下方。
+- 首次安装的默认值来自打包时的 `local.properties`（git 已忽略）：
+  ```properties
+  moonshot.api.key=你的key
+  moonshot.model=kimi-k2.6   # 可换成账户可用的其他模型
+  ```
+- 未配置 key 时 App 只输出本地规则综合，不影响其他功能。
+- 请求参数：`thinking` 关闭（低延迟），`max_tokens` 400，超时 10s/25s。
 
-## 四、PicoClaw 插件
+## 三、PicoClaw 插件
 
 `astro-dice/` 是配套的 [PicoClaw](https://github.com/sipeed/picoclaw) 技能插件（目录名即技能名），同一套「流水十二程」规则：
 在 PicoClaw 里对 AI 助手说「掷占星骰子」（或让它运行 `node scripts/roll.js [问题]`）即可掷骰解读。

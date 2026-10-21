@@ -2,9 +2,15 @@ plugins {
     id 'com.android.application'
 }
 
+def localProps = new Properties()
+def localFile = rootProject.file('local.properties')
+if (localFile.exists()) {
+    localFile.withInputStream { localProps.load(it) }
+}
+
 android {
     namespace 'com.astrodice.app'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.astrodice.app"
@@ -12,6 +18,14 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
+        buildConfigField "String", "MOONSHOT_API_KEY", "\"${localProps.getProperty('moonshot.api.key', '')}\""
+        buildConfigField "String", "MOONSHOT_MODEL", "\"${localProps.getProperty('moonshot.model', 'kimi-k2.6')}\""
+    }
+
+    buildToolsVersion '34.0.0'
+
+    buildFeatures {
+        buildConfig true
     }
 
     compileOptions {
