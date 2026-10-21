@@ -11,9 +11,12 @@ metadata: {"nanobot":{"emoji":"🎲","requires":{"bins":["node"]}}}
 ## 使用方法
 
 ```bash
+./roll_dice.sh [想问的问题]
+# 或
 node scripts/roll.js [想问的问题]
 ```
 
+- `roll_dice.sh` 为入口包装脚本（须可执行），内部调用 `scripts/roll.js`，从任意目录调用均可。
 - 不带参数直接掷骰；带参数时把问题写进解读（问题可含空格，不需要引号）。
 - 脚本的输出即完整解读，**原样呈现**给用户，不要改写、补掷或自行另解。
 

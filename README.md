@@ -72,6 +72,7 @@ app/src/main/
 └── res/                              ← 界面布局、颜色、图标
 picoclaw-skill/                       ← PicoClaw 技能插件
 ├── SKILL.md                          ← 技能说明（触发与用法）
+├── roll_dice.sh                      ← 入口包装脚本（调用下面的 roll.js）
 ├── scripts/roll.js                   ← 掷骰+解读脚本（node）
 └── assets/rules.json                 ← 与 App 相同的规则（含保密的解读内容）
 ```
