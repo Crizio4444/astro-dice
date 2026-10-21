@@ -1,6 +1,7 @@
 ---
 name: astro-dice
 description: 占星骰子占卜。投掷行星+星座+宫位三颗骰子，按「一条河」流水十二程体系生成完整解读（水性/流法/归处三相）。Use when the user asks to roll astrology dice, 占星骰子, 掷骰占卜, or wants a cosmic reading / 宇宙指引.
+metadata: {"nanobot":{"emoji":"🎲","requires":{"bins":["node"]}}}
 ---
 
 # astro-dice 占星骰子
