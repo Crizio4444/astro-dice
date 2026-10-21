@@ -110,3 +110,7 @@ picoclaw-skill/                       ← PicoClaw 技能插件
 ├── assets/rules.json                 ← 与 App 相同的规则
 └── references/river-method.md        ← 十二程/十二水性对照表
 ```
+
+---
+
+版权所有 © 2026 Criz，基于 [MIT 协议](LICENSE) 开源。

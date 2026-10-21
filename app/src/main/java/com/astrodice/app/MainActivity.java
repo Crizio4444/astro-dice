@@ -1,3 +1,8 @@
+/*
+ * 占星骰子 AstroDice
+ * Copyright (c) 2026 Criz
+ * SPDX-License-Identifier: MIT
+ */
 package com.astrodice.app;
 
 import android.app.Activity;

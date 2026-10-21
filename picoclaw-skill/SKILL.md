@@ -24,3 +24,7 @@ node scripts/roll.js [想问的问题]
 - 程数即阶段：1–4 发端期、5–8 展开期、9–12 归海期。星座程数与宫位程数两相对照，分别描述「行事方式所处的阶段」与「事情落点所处的阶段」。
 
 详细对照表、断语规则见 `references/river-method.md`；骰面文本与具体断语全部在 `assets/rules.json`，可直接替换为自定义解读法（JSON 不支持注释）。
+
+---
+
+作者：Criz · 许可证：MIT（见仓库 LICENSE）
