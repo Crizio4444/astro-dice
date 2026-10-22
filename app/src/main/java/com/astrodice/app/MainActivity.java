@@ -28,7 +28,10 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 
 public class MainActivity extends Activity {
@@ -85,6 +88,12 @@ public class MainActivity extends Activity {
     private boolean settingsOpen;
 
     private JSONObject rules;
+    // 解读引擎缓存：loadRules() 校验通过后一次性构建
+    private Map<String, JSONObject> planetMap, signMap, houseMap;
+    private Map<String, Integer> planetIndex, signIndex;
+    private Map<String, String> dignityMatrix;          // 行星|星座 → 庙旺状态
+    private String[][] aspectNameMatrix;                // [星座序][宫位-1] → 相位名
+    private int[][] aspectDegreeMatrix;                 // [星座序][宫位-1] → 度数
     private boolean rolling = false;
     private long rollDeadline;
     private long rollSeq;
@@ -218,9 +227,12 @@ public class MainActivity extends Activity {
     }
 
     private String fill(String tpl, String planet, String sign, String houseNum, String question) throws Exception {
-        JSONObject p = rules.getJSONObject("planets").getJSONObject(planet);
-        JSONObject s = rules.getJSONObject("signs").getJSONObject(sign);
-        JSONObject h = rules.getJSONObject("houses").getJSONObject(houseNum);
+        JSONObject p = planetMap.get(planet);
+        JSONObject s = signMap.get(sign);
+        JSONObject h = houseMap.get(houseNum);
+        if (p == null || s == null || h == null) {
+            throw new Exception("rules.json 缺少骰面条目：" + planet + "/" + sign + "/第" + houseNum + "宫");
+        }
         int house = Integer.parseInt(houseNum);
         return tpl
                 .replace("{question}", question.isEmpty() ? "" : "问：" + question + "\n\n")
@@ -246,9 +258,12 @@ public class MainActivity extends Activity {
 
     // 组合规则：「行星」在星座，落于第N宫——三相关键词 + 庙旺/相位合成；有 overrides 则以其为准
     private String ruleCombo(String planet, String sign, String houseNum) throws Exception {
-        JSONObject p = rules.getJSONObject("planets").getJSONObject(planet);
-        JSONObject s = rules.getJSONObject("signs").getJSONObject(sign);
-        JSONObject h = rules.getJSONObject("houses").getJSONObject(houseNum);
+        JSONObject p = planetMap.get(planet);
+        JSONObject s = signMap.get(sign);
+        JSONObject h = houseMap.get(houseNum);
+        if (p == null || s == null || h == null) {
+            throw new Exception("rules.json 缺少骰面条目：" + planet + "/" + sign + "/第" + houseNum + "宫");
+        }
         String key = planet + "|" + sign + "|" + houseNum + "宫";
         JSONObject ov = rules.optJSONObject("overrides");
         if (ov != null && ov.has(key)) return ov.getString(key);
@@ -263,7 +278,13 @@ public class MainActivity extends Activity {
 
     // ---------- 庙旺 ----------
 
+    // 查表结果；加载时由 computeDignity 预填
     private String dignityStatus(String planet, String sign) {
+        String st = dignityMatrix.get(planet + "|" + sign);
+        return st == null ? "平" : st;
+    }
+
+    private String computeDignity(String planet, String sign) {
         JSONObject dignity = rules.optJSONObject("dignity");
         if (dignity == null) return "平";
         JSONObject d = dignity.optJSONObject(planet);
@@ -297,15 +318,13 @@ public class MainActivity extends Activity {
     // ---------- 相位 ----------
 
     private String aspectName(String sign, int house) {
-        int idx = indexOf(SIGNS, sign) + 1;
-        int d = ((house - idx) % 12 + 12) % 12;
-        return ASPECT_NAMES[d];
+        Integer si = signIndex.get(sign);
+        return aspectNameMatrix[si == null ? indexOf(SIGNS, sign) : si][house - 1];
     }
 
     private int aspectDegree(String sign, int house) {
-        int idx = indexOf(SIGNS, sign) + 1;
-        int d = ((house - idx) % 12 + 12) % 12;
-        return Math.min(d, 12 - d) * 30;
+        Integer si = signIndex.get(sign);
+        return aspectDegreeMatrix[si == null ? indexOf(SIGNS, sign) : si][house - 1];
     }
 
     private String aspectLine(String sign, int house) {
@@ -462,9 +481,12 @@ public class MainActivity extends Activity {
     }
 
     private String buildAiPrompt(String planet, String sign, String houseNum, String question, String reference) throws Exception {
-        JSONObject p = rules.getJSONObject("planets").getJSONObject(planet);
-        JSONObject s = rules.getJSONObject("signs").getJSONObject(sign);
-        JSONObject h = rules.getJSONObject("houses").getJSONObject(houseNum);
+        JSONObject p = planetMap.get(planet);
+        JSONObject s = signMap.get(sign);
+        JSONObject h = houseMap.get(houseNum);
+        if (p == null || s == null || h == null) {
+            throw new Exception("rules.json 缺少骰面条目：" + planet + "/" + sign + "/第" + houseNum + "宫");
+        }
         StringBuilder sb = new StringBuilder();
         if (!question.isEmpty()) sb.append("问：").append(question).append('\n');
         sb.append("【骰面】").append(planet).append(" · ").append(sign).append(" · 第").append(houseNum).append("宫\n");
@@ -531,12 +553,120 @@ public class MainActivity extends Activity {
         if (json != null) {
             try {
                 rules = new JSONObject(json);
+                buildEngineCache();
                 return;
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                toast("规则文件无效（" + e.getMessage() + "），已使用内置简版规则");
             }
+        } else {
+            toast("规则文件缺失，已使用内置简版规则");
         }
         rules = fallbackRules();
-        toast("规则文件无效，已使用内置简版规则");
+        try {
+            buildEngineCache();
+        } catch (Exception ignored) {
+        }
+    }
+
+    /**
+     * 校验 rules.json 结构并预建解读缓存（行星/星座/宫位索引、庙旺矩阵、相位矩阵）。
+     * 任何不合法抛出带路径的异常，由 loadRules() 兜底为内置简版规则。
+     */
+    private void buildEngineCache() throws Exception {
+        JSONObject planets = rules.optJSONObject("planets");
+        if (planets == null) throw new Exception("rules.json 缺少 planets");
+        JSONObject signs = rules.optJSONObject("signs");
+        if (signs == null) throw new Exception("rules.json 缺少 signs");
+        JSONObject houses = rules.optJSONObject("houses");
+        if (houses == null) throw new Exception("rules.json 缺少 houses");
+        planetMap = new HashMap<>();
+        planetIndex = new HashMap<>();
+        for (int i = 0; i < PLANETS.length; i++) {
+            JSONObject o = planets.optJSONObject(PLANETS[i]);
+            if (o == null) throw new Exception("rules.json 缺少 planets." + PLANETS[i]);
+            planetMap.put(PLANETS[i], o);
+            planetIndex.put(PLANETS[i], i);
+        }
+        signMap = new HashMap<>();
+        signIndex = new HashMap<>();
+        for (int i = 0; i < SIGNS.length; i++) {
+            JSONObject o = signs.optJSONObject(SIGNS[i]);
+            if (o == null) throw new Exception("rules.json 缺少 signs." + SIGNS[i]);
+            signMap.put(SIGNS[i], o);
+            signIndex.put(SIGNS[i], i);
+        }
+        houseMap = new HashMap<>();
+        for (int i = 1; i <= HOUSE_COUNT; i++) {
+            String k = String.valueOf(i);
+            JSONObject o = houses.optJSONObject(k);
+            if (o == null) throw new Exception("rules.json 缺少 houses." + k);
+            houseMap.put(k, o);
+        }
+        if (rules.optString("template", "").isEmpty()) throw new Exception("rules.json 缺少 template");
+        validateDignityRefs();
+        validateOverrideKeys();
+        dignityMatrix = new HashMap<>();
+        for (String planet : PLANETS) {
+            for (String sign : SIGNS) {
+                dignityMatrix.put(planet + "|" + sign, computeDignity(planet, sign));
+            }
+        }
+        aspectNameMatrix = new String[SIGNS.length][HOUSE_COUNT];
+        aspectDegreeMatrix = new int[SIGNS.length][HOUSE_COUNT];
+        for (int s = 0; s < SIGNS.length; s++) {
+            for (int house = 1; house <= HOUSE_COUNT; house++) {
+                int d = ((house - (s + 1)) % 12 + 12) % 12;
+                aspectNameMatrix[s][house - 1] = ASPECT_NAMES[d];
+                aspectDegreeMatrix[s][house - 1] = Math.min(d, 12 - d) * 30;
+            }
+        }
+    }
+
+    private void validateDignityRefs() throws Exception {
+        JSONObject dignity = rules.optJSONObject("dignity");
+        if (dignity == null) return;
+        Iterator<String> it = dignity.keys();
+        while (it.hasNext()) {
+            String planet = it.next();
+            if (!planetMap.containsKey(planet)) {
+                throw new Exception("rules.json dignity 含未知行星：" + planet);
+            }
+            JSONObject d = dignity.optJSONObject(planet);
+            if (d == null) continue;
+            checkSignList(d.optJSONArray("domicile"), planet, "domicile");
+            checkSign(d.optString("exaltation", ""), planet, "exaltation");
+            checkSignList(d.optJSONArray("detriment"), planet, "detriment");
+            checkSign(d.optString("fall", ""), planet, "fall");
+        }
+    }
+
+    private void checkSignList(JSONArray arr, String planet, String field) throws Exception {
+        if (arr == null) return;
+        for (int i = 0; i < arr.length(); i++) {
+            checkSign(arr.optString(i), planet, field);
+        }
+    }
+
+    private void checkSign(String sign, String planet, String field) throws Exception {
+        if (!sign.isEmpty() && !signMap.containsKey(sign)) {
+            throw new Exception("rules.json dignity." + planet + "." + field + " 含未知星座：" + sign);
+        }
+    }
+
+    private void validateOverrideKeys() throws Exception {
+        JSONObject ov = rules.optJSONObject("overrides");
+        if (ov == null) return;
+        Iterator<String> it = ov.keys();
+        while (it.hasNext()) {
+            String key = it.next();
+            String[] parts = key.split("\\|", -1);
+            if (parts.length != 3) throw new Exception("rules.json overrides 键格式错误（应为 行星|星座|N宫）：" + key);
+            if (!planetMap.containsKey(parts[0])) throw new Exception("rules.json overrides 含未知行星：" + key);
+            if (!signMap.containsKey(parts[1])) throw new Exception("rules.json overrides 含未知星座：" + key);
+            if (!parts[2].matches("(?:[1-9]|1[0-2])宫")) {
+                throw new Exception("rules.json overrides 宫位写法错误（应为 1宫~12宫）：" + key);
+            }
+        }
     }
 
     /**

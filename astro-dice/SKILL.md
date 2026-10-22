@@ -14,6 +14,8 @@ metadata: {"nanobot":{"emoji":"🎲","requires":{"bins":["node"]}}}
 scripts/roll_dice.sh [想问的问题]
 # 或
 node scripts/roll.js [想问的问题]
+# 校验 rules.json（改完规则文件后跑一次，有问题会逐条列出）
+node scripts/roll.js --check
 ```
 
 - `scripts/roll_dice.sh` 为入口包装脚本（须可执行），内部调用同目录的 `roll.js`，从任意目录调用均可。
