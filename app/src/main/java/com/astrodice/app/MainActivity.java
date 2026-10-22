@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +74,7 @@ public class MainActivity extends Activity {
     private TextView dicePlanetGlyph, diceSignGlyph, diceHouseGlyph;
     private TextView tvResultTitle, tvResultBody;
     private LinearLayout resultCard, historyList;
+    private ScrollView mainScroll;
     private EditText etQuestion;
     private Button btnRoll;
     private EditText etApiBase, etApiKey, etApiModel;
@@ -103,6 +105,7 @@ public class MainActivity extends Activity {
         tvResultBody = findViewById(R.id.tv_result_body);
         resultCard = findViewById(R.id.result_card);
         historyList = findViewById(R.id.history_list);
+        mainScroll = findViewById(R.id.main_scroll);
         etQuestion = findViewById(R.id.et_question);
         btnRoll = findViewById(R.id.btn_roll);
         etApiBase = findViewById(R.id.et_api_base);
@@ -120,6 +123,7 @@ public class MainActivity extends Activity {
             toast("AI 设置已保存");
         });
         btnTestApi.setOnClickListener(v -> testApi());
+        findViewById(R.id.btn_clear_history).setOnClickListener(v -> clearHistory());
         settingsOpen = sp().getBoolean(KEY_SETTINGS_OPEN, false);
         applySettingsOpen();
         findViewById(R.id.ai_settings_header).setOnClickListener(v -> {
@@ -191,15 +195,15 @@ public class MainActivity extends Activity {
             tvResultBody.setText("规则文件解析失败：" + e.getMessage()
                     + "\n请重新安装 App 或检查 assets/rules.json。");
             resultCard.setVisibility(View.VISIBLE);
-            addHistory(title, question);
+            addHistory(planet, sign, houseNum, question);
             return;
         }
         tvResultTitle.setText(title);
         boolean ai = !apiKey().isEmpty();
         tvResultBody.setText(head + combo + (ai ? "\n\n✦ AI 综合生成中…" : ""));
         resultCard.setVisibility(View.VISIBLE);
-        addHistory(title, question);
-        if (ai) requestAiCombo(rollSeq, head, combo, planet, sign, houseNum, question);
+        String historyId = addHistory(planet, sign, houseNum, question);
+        if (ai) requestAiCombo(rollSeq, historyId, head, combo, planet, sign, houseNum, question);
     }
 
     // ---------- 解读（本地规则） ----------
@@ -423,7 +427,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void requestAiCombo(final long seq, final String head, final String reference,
+    private void requestAiCombo(final long seq, final String historyId, final String head, final String reference,
                                 final String planet, final String sign, final String houseNum,
                                 final String question) {
         final String base = normalizeBase(apiBase());
@@ -449,6 +453,7 @@ public class MainActivity extends Activity {
                 if (seq != rollSeq) return;
                 if (result != null && !result.isEmpty()) {
                     tvResultBody.setText(head + result);
+                    updateHistoryAi(historyId, result);
                 } else {
                     tvResultBody.setText(head + reference + "\n\n（AI 解读不可用，以上为本地规则综合）");
                 }
@@ -622,21 +627,51 @@ public class MainActivity extends Activity {
 
     // ---------- 历史记录 ----------
 
-    private void addHistory(String title, String question) {
+    private String addHistory(String planet, String sign, String houseNum, String question) {
         try {
             SharedPreferences sp = sp();
             JSONArray arr = new JSONArray(sp.getString(KEY_HISTORY, "[]"));
             JSONArray next = new JSONArray();
             JSONObject item = new JSONObject();
+            String id = System.currentTimeMillis() + "-" + random.nextInt(1000);
+            item.put("id", id);
             item.put("time", timeFmt.format(new Date()));
-            item.put("title", title);
+            item.put("title", planet + " · " + sign + " · 第" + houseNum + "宫");
             item.put("question", question);
+            item.put("planet", planet);
+            item.put("sign", sign);
+            item.put("house", houseNum);
             next.put(item);
             for (int i = 0; i < arr.length() && i < HISTORY_LIMIT - 1; i++) {
                 next.put(arr.get(i));
             }
             sp.edit().putString(KEY_HISTORY, next.toString()).apply();
             renderHistory();
+            return id;
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    // AI 解读返回后写回对应历史记录
+    private void updateHistoryAi(String id, String ai) {
+        if (id == null || ai == null || ai.isEmpty()) return;
+        try {
+            SharedPreferences sp = sp();
+            JSONArray arr = new JSONArray(sp.getString(KEY_HISTORY, "[]"));
+            boolean changed = false;
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject it = arr.optJSONObject(i);
+                if (it != null && id.equals(it.optString("id"))) {
+                    it.put("ai", ai);
+                    changed = true;
+                    break;
+                }
+            }
+            if (changed) {
+                sp.edit().putString(KEY_HISTORY, arr.toString()).apply();
+                renderHistory();
+            }
         } catch (Exception ignored) {
         }
     }
@@ -658,12 +693,14 @@ public class MainActivity extends Activity {
                 TextView tv = new TextView(this);
                 String q = it.optString("question");
                 String line = it.optString("time") + "   " + it.optString("title");
+                if (!it.optString("ai").isEmpty()) line += "   ✦AI";
                 if (!q.isEmpty()) line += "\n问：" + q;
                 tv.setText(line);
                 tv.setTextColor(0xDDFFFFFF);
                 tv.setTextSize(13);
                 int padV = dp(8);
                 tv.setPadding(0, padV, 0, padV);
+                tv.setOnClickListener(v -> openHistory(it));
                 historyList.addView(tv);
                 View div = new View(this);
                 div.setBackgroundColor(0x22FFFFFF);
@@ -671,6 +708,63 @@ public class MainActivity extends Activity {
             }
         } catch (Exception ignored) {
         }
+    }
+
+    // 点击历史记录：把骰面与结果卡片刷新为该记录的内容
+    private void openHistory(JSONObject it) {
+        if (rolling) return;
+        String planet = it.optString("planet");
+        String sign = it.optString("sign");
+        String houseNum = it.optString("house");
+        String question = it.optString("question");
+        String title = it.optString("title");
+        if (title.isEmpty()) title = planet + " · " + sign + " · 第" + houseNum + "宫";
+        if (planet.isEmpty() || sign.isEmpty() || houseNum.isEmpty()) {
+            tvResultTitle.setText(title);
+            tvResultBody.setText("该记录缺少骰子明细，无法还原解读。");
+            resultCard.setVisibility(View.VISIBLE);
+            scrollToResult();
+            return;
+        }
+        rollSeq++;
+        try {
+            dicePlanet.setText(planet);
+            diceSign.setText(sign);
+            diceHouse.setText(houseNum);
+            dicePlanetGlyph.setText(PLANET_GLYPHS[indexOf(PLANETS, planet)]);
+            diceSignGlyph.setText(SIGN_GLYPHS[indexOf(SIGNS, sign)]);
+            diceHouseGlyph.setText(HOUSE_GLYPHS[Integer.parseInt(houseNum) - 1]);
+        } catch (Exception ignored) {
+        }
+        String head;
+        String combo;
+        try {
+            head = buildHead(planet, sign, houseNum, question);
+            combo = ruleCombo(planet, sign, houseNum);
+        } catch (Exception e) {
+            tvResultTitle.setText(title);
+            tvResultBody.setText("规则文件解析失败：" + e.getMessage()
+                    + "\n请重新安装 App 或检查 assets/rules.json。");
+            resultCard.setVisibility(View.VISIBLE);
+            scrollToResult();
+            return;
+        }
+        tvResultTitle.setText(title);
+        String ai = it.optString("ai");
+        if (!ai.isEmpty()) {
+            tvResultBody.setText(head + ai);
+        } else if (!apiKey().isEmpty()) {
+            tvResultBody.setText(head + combo + "\n\n✦ AI 综合生成中…");
+            requestAiCombo(rollSeq, it.optString("id"), head, combo, planet, sign, houseNum, question);
+        } else {
+            tvResultBody.setText(head + combo);
+        }
+        resultCard.setVisibility(View.VISIBLE);
+        scrollToResult();
+    }
+
+    private void scrollToResult() {
+        mainScroll.post(() -> mainScroll.smoothScrollTo(0, resultCard.getTop()));
     }
 
     private void clearHistory() {
