@@ -70,7 +70,6 @@
   ```
 - 未配置 key 时 App 只输出本地规则综合，不影响其他功能。
 - 请求参数：`thinking` 关闭（低延迟），`max_tokens` 400，超时 10s/25s。
-- PicoClaw 插件同样支持 AI 综合解读（环境变量配置），见下文第三节。
 
 ## 三、PicoClaw 插件
 
@@ -78,24 +77,10 @@
 在 PicoClaw 里对 AI 助手说「掷占星骰子」（或让它运行 `node scripts/roll.js [问题]`）即可掷骰解读。
 规则文件与安卓 App 共用一份（`assets/rules.json`），改法相同。
 
-插件同样内置 AI 综合解读，机制与 App 一致（同一 prompt 与请求参数）：设置环境变量 `MOONSHOT_API_KEY` 后，
-掷骰时脚本自动调用 Moonshot 兼容接口生成【综合】段；未配置 key 或调用失败时保留本地规则综合（失败附提示）。
-`MOONSHOT_API_BASE` / `MOONSHOT_MODEL` 可换接口地址与模型（默认值同上）；
-`node scripts/roll.js --test-api` 测试连通性（先验 `GET {地址}/models` 再验最小对话），`--no-ai` 临时禁用 AI。
-插件按环境变量取配置，与 App 的「AI 设置」卡片互不影响、各自独立。
-
 安装（把技能放进 PicoClaw 的 workspace）：
 
 ```bash
 cp -r astro-dice/. /root/.picoclaw/workspace/skills/astro-dice/
-```
-
-配置 AI（在 PicoClaw 的运行环境里注入环境变量）：
-
-```bash
-export MOONSHOT_API_KEY=你的key
-# 可选：export MOONSHOT_API_BASE=https://api.moonshot.cn/v1
-# 可选：export MOONSHOT_MODEL=kimi-k2.6
 ```
 
 ## 项目结构
@@ -108,7 +93,7 @@ app/src/main/
 astro-dice/                          ← PicoClaw 技能插件（目录名 = 技能名）
 ├── SKILL.md                          ← 技能说明（触发与用法）
 ├── scripts/roll_dice.sh              ← 入口包装脚本（调用同目录 roll.js）
-├── scripts/roll.js                   ← 掷骰+解读脚本（node，含 --check / --test-api / --no-ai 与 AI 综合调用）
+├── scripts/roll.js                   ← 掷骰+解读脚本（node）
 └── assets/rules.json                 ← 与 App 相同的规则（含保密的解读内容）
 ```
 
