@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
 
     private static final String[] PLANETS = {
             "太阳", "月亮", "水星", "金星", "火星", "木星",
-            "土星", "天王星", "海王星", "冥王星", "北交点", "南交点"
+            "土星", "天王星", "海王星", "冥王星", "莉莉丝", "普里阿普斯"
     };
     private static final String[] SIGNS = {
             "白羊座", "金牛座", "双子座", "巨蟹座", "狮子座", "处女座",
@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
     private static final int HOUSE_COUNT = 12;
 
     // 与 PLANETS / SIGNS / 宫位序（1 起）一一对应
-    private static final String[] PLANET_GLYPHS = {"☉", "☽", "☿", "♀", "♂", "♃", "♄", "♅", "♆", "♇", "☊", "☋"};
+    private static final String[] PLANET_GLYPHS = {"☉", "☽", "☿", "♀", "♂", "♃", "♄", "♅", "♆", "♇", "⚸", "Π"};
     private static final String[] SIGN_GLYPHS = {"♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓"};
     private static final String[] HOUSE_GLYPHS = {"Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ", "Ⅺ", "Ⅻ"};
 
@@ -681,7 +681,7 @@ public class MainActivity extends Activity {
                     .put("火星", entry("行动与欲望", "行动")).put("木星", entry("幸运与扩张", "幸运"))
                     .put("土星", entry("责任与考验", "责任")).put("天王星", entry("突变与自由", "变革"))
                     .put("海王星", entry("幻想与灵性", "梦想")).put("冥王星", entry("转化与权力", "蜕变"))
-                    .put("北交点", entry("成长方向", "成长")).put("南交点", entry("过去惯性", "惯性"));
+                    .put("莉莉丝", entry("本能与禁忌", "本能")).put("普里阿普斯", entry("繁衍与丰饶", "繁衍"));
             JSONObject s = new JSONObject()
                     .put("白羊座", sign("火象", "基本宫", "直接冲动", "冲动")).put("金牛座", sign("土象", "固定宫", "稳健务实", "守成"))
                     .put("双子座", sign("风象", "变动宫", "灵活善变", "变通")).put("巨蟹座", sign("水象", "基本宫", "敏感恋家", "恋家"))
