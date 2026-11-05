@@ -1,12 +1,12 @@
 ---
 name: astro-dice
-description: 占星骰子占卜。投掷行星+星座+宫位三颗骰子，按「一条河」流水十二程体系生成完整解读（水性/流法/归处三相，36关键词+庙旺+相位）。Use when the user asks to roll astrology dice, 占星骰子, 掷骰占卜, or wants a cosmic reading / 宇宙指引.
+description: 占星骰子占卜。投掷行星+星座+宫位三颗骰子，按「一条河」流水十二境体系生成完整解读（水性/流法/归处三相，36关键词+庙旺+相位）。Use when the user asks to roll astrology dice, 占星骰子, 掷骰占卜, or wants a cosmic reading / 宇宙指引.
 metadata: {"nanobot":{"emoji":"🎲","requires":{"bins":["node"]}}}
 ---
 
 # astro-dice 占星骰子
 
-掷出三颗骰子（行星 · 星座 · 宫位），按「一条河」流水十二程体系输出完整解读。
+掷出三颗骰子（行星 · 星座 · 宫位），按「一条河」流水十二境体系输出完整解读。
 
 ## 使用方法
 
@@ -42,7 +42,7 @@ node scripts/roll.js --check
 
 ## 解读体系（一条河，已定稿保密）
 
-行星 = 水性、星座 = 流法、宫位 = 归处，三相合成一条河的完整叙事；程数即事情所处的阶段。
+行星 = 水性、星座 = 流法、宫位 = 归处，三相合成一条河的完整叙事；境数即事情所处的阶段。
 骰面文本与断语属于作者保密内容，不在技能文档中展开——数据与意象以 `assets/rules.json` 为准，可替换为自定义解读法。
 
 ---

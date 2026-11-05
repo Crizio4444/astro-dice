@@ -348,13 +348,13 @@ public class MainActivity extends Activity {
     }
 
     private String defaultAspectNote(String name) {
-        if ("合相".equals(name)) return "同位共振：流法与归处同程，现路即去路，一顺百顺。";
-        if ("邻宫".equals(name)) return "相邻相承：只差一程，顺势微调即达。";
+        if ("合相".equals(name)) return "同位共振：流法与归处同境，现路即去路，一顺百顺。";
+        if ("邻宫".equals(name)) return "相邻相承：只差一境，顺势微调即达。";
         if ("六合".equals(name)) return "六合相扶：来去相就，水到渠成。";
         if ("刑".equals(name)) return "刑克相顶：流法与归处相别，过程有摩擦，宜绕行缓图。";
         if ("拱".equals(name)) return "拱照同气：流法与归处相和，来去皆顺。";
         if ("冲".equals(name)) return "对冲相张：流法与归处正对，张力最大，成在破立之间的平衡。";
-        return "梅花相错：流法与归处错开半程，需调整适应，勿硬拧。";
+        return "梅花相错：流法与归处错开半境，需调整适应，勿硬拧。";
     }
 
     // ---------- AI 设置与调用（Moonshot 兼容接口） ----------

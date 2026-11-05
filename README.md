@@ -25,7 +25,7 @@
 | 字段 | 作用 |
 |---|---|
 | `planets` | 12 个行星各自的关键词 `kw`、核心含义 `core`、水的意象 `water`（这条河的水性）与关键词组 `keywords` |
-| `signs` | 12 星座的关键词 `kw`、元素 `element`、模式 `mode`、流水阶段 `phase`（第几程·所属阶段期）、流法意象 `style` |
+| `signs` | 12 星座的关键词 `kw`、元素 `element`、模式 `mode`、流水阶段 `phase`（第几境·所属阶段期）、流法意象 `style` |
 | `houses` | 12 宫位（键是数字字符串 `"1"`~`"12"`）的关键词 `kw`、名称 `name`、流水阶段 `phase`、归处意象 `domain` |
 | `dignity` | 庙旺表：每颗行星的入庙 `domicile`、擢升 `exaltation`、失势 `detriment`、落陷 `fall` 星座 |
 | `dignityNotes` | 入庙/擢升/失势/落陷/平五种状态的断语 |
@@ -43,7 +43,7 @@
 命中 `overrides` 时以 override 文本替代。
 
 **解读体系（当前内置）：一条河**（已定稿，具体内容保密） ——
-行星 = 水性、星座 = 流法、宫位 = 归处，三相合成一条河的完整叙事；程数即事情所处的阶段。
+行星 = 水性、星座 = 流法、宫位 = 归处，三相合成一条河的完整叙事；境数即事情所处的阶段。
 具体意象与断语不在文档中公开，全部保存在 `app/src/main/assets/rules.json`（App 运行时读取）。
 
 **overrides 的键格式：** `行星|星座|宫位数字`，例如 `"月亮|巨蟹座|4宫"`。
@@ -73,7 +73,7 @@
 
 ## 三、PicoClaw 插件
 
-`astro-dice/` 是配套的 [PicoClaw](https://github.com/sipeed/picoclaw) 技能插件（目录名即技能名），同一套「流水十二程」规则：
+`astro-dice/` 是配套的 [PicoClaw](https://github.com/sipeed/picoclaw) 技能插件（目录名即技能名），同一套「流水十二境」规则：
 在 PicoClaw 里对 AI 助手说「掷占星骰子」（或让它运行 `node scripts/roll.js [问题]`）即可掷骰解读。
 规则文件与安卓 App 共用一份（`assets/rules.json`），改法相同。
 
