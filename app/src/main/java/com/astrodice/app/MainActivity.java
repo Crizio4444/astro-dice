@@ -96,6 +96,7 @@ public class MainActivity extends Activity {
     private int[][] aspectDegreeMatrix;                 // [星座序][宫位-1] → 度数
     private boolean rolling = false;
     private long rollDeadline;
+    private long shuffleDelay = 70;
     private long rollSeq;
     private String finalPlanet, finalSign, finalHouseNum;
 
@@ -163,20 +164,25 @@ public class MainActivity extends Activity {
         finalHouseNum = String.valueOf(1 + random.nextInt(HOUSE_COUNT));
 
         rollDeadline = System.currentTimeMillis() + 900 + random.nextInt(500);
+        shuffleDelay = 70;
         shuffleRunnable.run();
     }
 
     private final Runnable shuffleRunnable = new Runnable() {
         @Override
         public void run() {
-            dicePlanet.setText(PLANETS[random.nextInt(PLANETS.length)]);
-            diceSign.setText(SIGNS[random.nextInt(SIGNS.length)]);
-            diceHouse.setText(String.valueOf(1 + random.nextInt(HOUSE_COUNT)));
-            dicePlanetGlyph.setText(PLANET_GLYPHS[random.nextInt(PLANET_GLYPHS.length)]);
-            diceSignGlyph.setText(SIGN_GLYPHS[random.nextInt(SIGN_GLYPHS.length)]);
-            diceHouseGlyph.setText(HOUSE_GLYPHS[random.nextInt(HOUSE_GLYPHS.length)]);
+            int pi = random.nextInt(PLANETS.length);
+            int si = random.nextInt(SIGNS.length);
+            int hi = random.nextInt(HOUSE_COUNT);
+            dicePlanet.setText(PLANETS[pi]);
+            diceSign.setText(SIGNS[si]);
+            diceHouse.setText(String.valueOf(hi + 1));
+            dicePlanetGlyph.setText(PLANET_GLYPHS[pi]);
+            diceSignGlyph.setText(SIGN_GLYPHS[si]);
+            diceHouseGlyph.setText(HOUSE_GLYPHS[hi]);
             if (System.currentTimeMillis() < rollDeadline) {
-                handler.postDelayed(this, 70);
+                shuffleDelay = Math.min(shuffleDelay + 9, 160);
+                handler.postDelayed(this, shuffleDelay);
             } else {
                 dicePlanet.setText(finalPlanet);
                 diceSign.setText(finalSign);
