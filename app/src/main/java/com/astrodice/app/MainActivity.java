@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -70,6 +71,7 @@ public class MainActivity extends Activity {
     private static final int HISTORY_LIMIT = 100;
 
     private final Random random = new Random();
+    private final SecureRandom rollRandom = new SecureRandom();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final SimpleDateFormat timeFmt = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
 
@@ -159,10 +161,6 @@ public class MainActivity extends Activity {
         btnRoll.setEnabled(false);
         resultCard.setVisibility(View.GONE);
 
-        finalPlanet = PLANETS[random.nextInt(PLANETS.length)];
-        finalSign = SIGNS[random.nextInt(SIGNS.length)];
-        finalHouseNum = String.valueOf(1 + random.nextInt(HOUSE_COUNT));
-
         rollDeadline = System.currentTimeMillis() + 900 + random.nextInt(500);
         shuffleDelay = 70;
         shuffleRunnable.run();
@@ -184,6 +182,11 @@ public class MainActivity extends Activity {
                 shuffleDelay = Math.min(shuffleDelay + 9, 160);
                 handler.postDelayed(this, shuffleDelay);
             } else {
+                // 停定这一刻才抽签：在 12×12×12=1728 种组合中等概率抽一个，再拆成三颗骰
+                int n = rollRandom.nextInt(PLANETS.length * SIGNS.length * HOUSE_COUNT);
+                finalPlanet = PLANETS[n / (SIGNS.length * HOUSE_COUNT)];
+                finalSign = SIGNS[(n / HOUSE_COUNT) % SIGNS.length];
+                finalHouseNum = String.valueOf(n % HOUSE_COUNT + 1);
                 dicePlanet.setText(finalPlanet);
                 diceSign.setText(finalSign);
                 diceHouse.setText(finalHouseNum);
