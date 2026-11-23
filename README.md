@@ -99,4 +99,4 @@ astro-dice/                          ← PicoClaw 技能插件（目录名 = 技
 
 ---
 
-版权所有 © 2026 Criz，基于 [MIT 协议](LICENSE) 开源。
+版权所有 © 2026 Criz，基于 [AGPL-3.0 协议](LICENSE) 开源。

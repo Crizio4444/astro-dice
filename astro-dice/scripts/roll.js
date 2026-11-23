@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // 占星骰子：掷行星+星座+宫位，按「一条河」流水十二境体系输出解读。
-// Copyright (c) 2026 Criz, licensed under the MIT License.
+// Copyright (c) 2026 Criz, licensed under the GNU Affero General Public License v3 or later.
 // 用法: node roll.js [想问的问题]
 //      node roll.js --check   校验 rules.json 结构，不掷骰
 const fs = require('fs');

@@ -371,7 +371,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="18dp"
             android:layout_marginBottom="8dp"
-            android:text="✦ by Criz · MIT 开源 ✦"
+            android:text="✦ by Criz · AGPL3 开源 ✦"
             android:textColor="#44FFFFFF"
             android:textSize="11sp" />
     </LinearLayout>

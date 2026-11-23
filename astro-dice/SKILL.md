@@ -47,4 +47,4 @@ node scripts/roll.js --check
 
 ---
 
-作者：Criz · 许可证：MIT（见仓库 LICENSE）
+作者：Criz · 许可证：GNU AGPL-3.0（见仓库 LICENSE）
