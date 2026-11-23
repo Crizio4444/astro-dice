@@ -234,7 +234,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="AI 设置（Moonshot）"
+                    android:text="AI 设置"
                     android:textColor="#FFFFFF"
                     android:textSize="15sp"
                     android:textStyle="bold" />
