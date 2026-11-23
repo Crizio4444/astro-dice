@@ -1,63 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="48dp"
-    android:height="48dp"
-    android:viewportWidth="48"
-    android:viewportHeight="48">
-    <!-- 底：夜水深色 -->
-    <path
-        android:fillColor="#0B1420"
-        android:pathData="M0,0h48v48h-48z" />
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
     <!-- 圆形图章：外环 + 纯黑盘面（黑鱼之身） -->
     <path
         android:fillColor="#33546F"
-        android:pathData="M24,2.5 a21.5,21.5 0 1 1 0,43 a21.5,21.5 0 1 1 0,-43 z" />
+        android:pathData="M54,21.75 a32.25,32.25 0 1 1 0,64.5 a32.25,32.25 0 1 1 0,-64.5 z" />
     <path
         android:fillColor="#000000"
-        android:pathData="M24,4 a20,20 0 1 1 0,40 a20,20 0 1 1 0,-40 z" />
+        android:pathData="M54,24 a30,30 0 1 1 0,60 a30,30 0 1 1 0,-60 z" />
     <!-- 太极白鱼：鱼头圆鼓居上（探入左半盘），鱼尾收窄沿右缘下行；S 界全程可见 -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M24,4 A10,10 0 0 0 24,24 A10,10 0 0 1 24,44 A20,20 0 0 0 24,4 Z" />
+        android:pathData="M54,24 A15,15 0 0 0 54,54 A15,15 0 0 1 54,84 A30,30 0 0 0 54,24 Z" />
     <!-- 白鱼花纹（黑）：头顶两道流纹 -->
     <path
         android:strokeColor="#000000"
-        android:strokeWidth="1.5"
+        android:strokeWidth="2.25"
         android:strokeLineCap="round"
-        android:pathData="M28,12 Q33,9.8 38,12" />
+        android:pathData="M60,36 Q67.5,32.7 75,36" />
     <path
         android:strokeColor="#000000"
-        android:strokeWidth="1.5"
+        android:strokeWidth="2.25"
         android:strokeLineCap="round"
-        android:pathData="M18,19 Q28,16.5 38,19" />
+        android:pathData="M45,46.5 Q60,42.75 75,46.5" />
     <!-- 白鱼花纹（黑）：鱼尾一道流纹 -->
     <path
         android:strokeColor="#000000"
-        android:strokeWidth="1.5"
+        android:strokeWidth="2.25"
         android:strokeLineCap="round"
-        android:pathData="M34.5,32 Q37.5,29.8 40.5,32" />
+        android:pathData="M69.75,66 Q74.25,62.7 78.75,66" />
     <!-- 白鱼之眼：黑色水滴（圆底+切线尖顶） -->
     <path
         android:fillColor="#000000"
-        android:pathData="M24,8.8 L25.3,11.75 A2.6,2.6 0 0 1 22.7,11.75 Z" />
+        android:pathData="M54,31.2 L55.95,35.625 A3.9,3.9 0 0 1 52.05,35.625 Z" />
     <!-- 黑鱼花纹（白）：与白鱼完全相同的三道流纹，绕圆心 180° 旋转对应（头两道、尾一道） -->
     <path
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="1.5"
+        android:strokeWidth="2.25"
         android:strokeLineCap="round"
-        android:pathData="M20,36 Q15,38.2 10,36" />
+        android:pathData="M48,72 Q40.5,75.3 33,72" />
     <path
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="1.5"
+        android:strokeWidth="2.25"
         android:strokeLineCap="round"
-        android:pathData="M30,29 Q20,31.5 10,29" />
+        android:pathData="M63,61.5 Q48,65.25 33,61.5" />
     <path
         android:strokeColor="#FFFFFF"
-        android:strokeWidth="1.5"
+        android:strokeWidth="2.25"
         android:strokeLineCap="round"
-        android:pathData="M13.5,16 Q10.5,18.2 7.5,16" />
+        android:pathData="M38.25,42 Q33.75,45.3 29.25,42" />
     <!-- 黑鱼之眼：白色水滴，与白鱼之眼 180° 旋转对称（尖顶朝下） -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M24,39.2 L22.7,36.25 A2.6,2.6 0 0 0 25.3,36.25 Z" />
+        android:pathData="M54,76.8 L52.05,72.375 A3.9,3.9 0 0 0 55.95,72.375 Z" />
 </vector>

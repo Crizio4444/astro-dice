@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 主题图标单色层：系统按壁纸取色渲染，内容为黑白图案的纯黑剪影 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 太极白鱼之形 -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M54,24 A15,15 0 0 0 54,54 A15,15 0 0 1 54,84 A30,30 0 0 0 54,24 Z" />
+    <!-- 白鱼花纹：头顶两道、鱼尾一道 -->
+    <path
+        android:strokeColor="#000000"
+        android:strokeWidth="2.25"
+        android:strokeLineCap="round"
+        android:pathData="M60,36 Q67.5,32.7 75,36" />
+    <path
+        android:strokeColor="#000000"
+        android:strokeWidth="2.25"
+        android:strokeLineCap="round"
+        android:pathData="M45,46.5 Q60,42.75 75,46.5" />
+    <path
+        android:strokeColor="#000000"
+        android:strokeWidth="2.25"
+        android:strokeLineCap="round"
+        android:pathData="M69.75,66 Q74.25,62.7 78.75,66" />
+    <!-- 白鱼之眼 -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M54,31.2 L55.95,35.625 A3.9,3.9 0 0 1 52.05,35.625 Z" />
+    <!-- 黑鱼花纹（同形旋转 180°：头两道、尾一道） -->
+    <path
+        android:strokeColor="#000000"
+        android:strokeWidth="2.25"
+        android:strokeLineCap="round"
+        android:pathData="M48,72 Q40.5,75.3 33,72" />
+    <path
+        android:strokeColor="#000000"
+        android:strokeWidth="2.25"
+        android:strokeLineCap="round"
+        android:pathData="M63,61.5 Q48,65.25 33,61.5" />
+    <path
+        android:strokeColor="#000000"
+        android:strokeWidth="2.25"
+        android:strokeLineCap="round"
+        android:pathData="M38.25,42 Q33.75,45.3 29.25,42" />
+    <!-- 黑鱼之眼 -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M54,76.8 L52.05,72.375 A3.9,3.9 0 0 0 55.95,72.375 Z" />
+</vector>
