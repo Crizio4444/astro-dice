@@ -257,6 +257,15 @@
                 android:orientation="vertical"
                 android:visibility="gone">
 
+            <Switch
+                android:id="@+id/switch_ai_enabled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="启用 AI 解读"
+                android:textColor="#FFFFFF"
+                android:textSize="13sp" />
+
             <EditText
                 android:id="@+id/et_api_base"
                 android:layout_width="match_parent"

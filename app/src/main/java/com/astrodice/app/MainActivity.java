@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,6 +69,7 @@ public class MainActivity extends Activity {
     private static final String KEY_API_KEY = "api_key";
     private static final String KEY_API_MODEL = "api_model";
     private static final String KEY_SETTINGS_OPEN = "ai_settings_open";
+    private static final String KEY_AI_ENABLED = "ai_enabled";
     private static final int HISTORY_LIMIT = 100;
 
     private final Random random = new Random();
@@ -84,6 +86,7 @@ public class MainActivity extends Activity {
     private Button btnRoll;
     private EditText etApiBase, etApiKey, etApiModel;
     private Button btnSaveApi, btnTestApi;
+    private Switch switchAiEnabled;
     private TextView tvApiStatus;
     private LinearLayout aiSettingsBody;
     private TextView aiSettingsArrow;
@@ -125,6 +128,7 @@ public class MainActivity extends Activity {
         etApiModel = findViewById(R.id.et_api_model);
         btnSaveApi = findViewById(R.id.btn_save_api);
         btnTestApi = findViewById(R.id.btn_test_api);
+        switchAiEnabled = findViewById(R.id.switch_ai_enabled);
         tvApiStatus = findViewById(R.id.tv_api_status);
         aiSettingsBody = findViewById(R.id.ai_settings_body);
         aiSettingsArrow = findViewById(R.id.ai_settings_arrow);
@@ -135,6 +139,9 @@ public class MainActivity extends Activity {
             toast("AI 设置已保存");
         });
         btnTestApi.setOnClickListener(v -> testApi());
+        switchAiEnabled.setChecked(aiEnabled());
+        switchAiEnabled.setOnCheckedChangeListener((btn, checked) ->
+                sp().edit().putBoolean(KEY_AI_ENABLED, checked).apply());
         findViewById(R.id.btn_clear_history).setOnClickListener(v -> clearHistory());
         settingsOpen = sp().getBoolean(KEY_SETTINGS_OPEN, false);
         applySettingsOpen();
@@ -217,7 +224,7 @@ public class MainActivity extends Activity {
             return;
         }
         tvResultTitle.setText(title);
-        boolean ai = !apiKey().isEmpty();
+        boolean ai = aiEnabled() && !apiKey().isEmpty();
         tvResultBody.setText(head + combo + (ai ? "\n\n✦ AI 综合生成中…" : ""));
         resultCard.setVisibility(View.VISIBLE);
         String historyId = addHistory(planet, sign, houseNum, question);
@@ -370,6 +377,11 @@ public class MainActivity extends Activity {
     private String apiKey() {
         String k = sp().getString(KEY_API_KEY, BuildConfig.MOONSHOT_API_KEY);
         return k == null ? "" : k.trim();
+    }
+
+    // AI 解读总开关：关闭后掷骰只出本地规则综合，不再请求 AI
+    private boolean aiEnabled() {
+        return sp().getBoolean(KEY_AI_ENABLED, true);
     }
 
     private String apiModel() {
@@ -892,7 +904,7 @@ public class MainActivity extends Activity {
         String ai = it.optString("ai");
         if (!ai.isEmpty()) {
             tvResultBody.setText(head + ai);
-        } else if (!apiKey().isEmpty()) {
+        } else if (aiEnabled() && !apiKey().isEmpty()) {
             tvResultBody.setText(head + combo + "\n\n✦ AI 综合生成中…");
             requestAiCombo(rollSeq, it.optString("id"), head, combo, planet, sign, houseNum, question);
         } else {
